@@ -1,3 +1,7 @@
+"""
+This module is used for synthetic feature generation
+"""
+
 #!/usr/bin/env python
 # coding: utf-8
 # %%
@@ -25,7 +29,7 @@ def set_random_seed(seed: int):
 
 set_random_seed(12345)
 
-
+# These are the parameters that you can tune for the synthetic data
 TOTAL_UNIQUE_USERS = 1000
 TOTAL_UNIQUE_TRANSACTIONS = 54000
 CASH_WITHRAWAL_CARDS_TOTAL = 2000 
@@ -45,6 +49,7 @@ AMOUNT_DISTRIBUTION_PERCENTAGES = {
                                    0.001: (10000, 30000.01)
                                   }
 
+# categories that the transactions should fall into
 CATEGORY_PERC_PRICE = {
                        "Grocery":              (0.5, 0.01, 100), 
                        "Restaurant/Cafeteria": (0.2, 1, 100),
@@ -75,7 +80,9 @@ SUSCEPTIBLE_CARDS_DISTRIBUTION_BY_AGE = {
 
 
 def generate_unique_credit_card_numbers(n: int) -> pd.Series:
-    """."""    
+    """
+    Use the faker module to generate 'n' number of unique credit card numbers
+    """    
     cc_ids = set()
     for _ in range(n):
         cc_id = faker.credit_card_number(card_type='visa')
@@ -86,7 +93,9 @@ def generate_unique_credit_card_numbers(n: int) -> pd.Series:
 # assert len(credit_card_numbers[0]) == 16 # validate if generated number is 16-digit
 
 def generate_list_credit_card_numbers() -> list:
-    """."""    
+    """
+    Returns a list of profiles. cc number, provider and expiry date
+    """    
     credit_cards = []
     credit_card_numbers = generate_unique_credit_card_numbers(TOTAL_UNIQUE_USERS)
     delta_time_object = datetime.datetime.strptime(START_DATE, DATE_FORMAT)
@@ -95,8 +104,13 @@ def generate_list_credit_card_numbers() -> list:
         credit_cards.append({'cc_num': cc_num, 'provider': 'visa', 'expires': faker.credit_card_expire(start=delta_time_object, end="+5y", date_format="%m/%y")})        
     return credit_cards
 
+
+
+
 def generate_df_with_profiles(credit_cards : list)-> pd.DataFrame:
-    """."""    
+    """
+    Returns a dataframe that contains the profile for each credit card owner
+    """    
     profiles = []
     for credit_card in credit_cards:
         address = faker.local_latlng(country_code = 'US')
@@ -119,6 +133,7 @@ def generate_df_with_profiles(credit_cards : list)-> pd.DataFrame:
     profiles_df['cc_num']= pd.to_numeric(profiles_df['cc_num'])
 
     return profiles_df
+
 
 #  pyasset - assert len(timestamps) == TOTAL_UNIQUE_TRANSACTIONS
 def generate_timestamps(n: int) -> list:

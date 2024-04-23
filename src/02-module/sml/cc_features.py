@@ -1,3 +1,7 @@
+"""
+This module contains the logic that will be used to create new features (for the backfillign and production feature pipeline) that will be returned
+"""
+
 import pandas as pd
 import numpy as np
 
@@ -6,11 +10,16 @@ from math import radians
 
 # +
 def card_owner_age(trans_df : pd.DataFrame, profiles_df : pd.DataFrame)-> pd.DataFrame:
-    """Used only in feature pipelines (not online inference). 
-       Unit test with DataFrames and sample data.
     """
+    Used only in feature pipelines (not online inference). 
+    Unit test with DataFrames and sample data.
+    """
+    # Number of days in a year (365.25 for average year)
+    days_in_year = 365.25
+    
     age_df = trans_df.merge(profiles_df, on="cc_num", how="left")
-    trans_df["age_at_transaction"] = (age_df["datetime"] - age_df["birthdate"]) / np.timedelta64(1, "Y")
+    # trans_df["age_at_transaction"] = (age_df["datetime"] - age_df["birthdate"]) / np.timedelta64(1, "Y")
+    trans_df["age_at_transaction"] = (age_df["datetime"] - age_df["birthdate"]) / np.timedelta64(int(days_in_year), "D")
     return trans_df
 
 def expiry_days(trans_df : pd.DataFrame, credit_cards_df : pd.DataFrame)-> pd.DataFrame:
